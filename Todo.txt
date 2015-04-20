@@ -1,0 +1,42 @@
+/*
+requires (forall s1,r1: ref :: 
+	s1 != null && read($srcHeap,s1,alloc) && dtype(s1) == pacman$GameState &&
+	r1 != null && read($srcHeap,r1,alloc) && dtype(r1) == pacman$Record 
+	&& read($srcHeap, s1, pacman$GameState.record) == r1
+	&& read($srcHeap, s1, pacman$GameState.STATE) == 3
+	==>
+	(exists act : ref :: 
+	act != null && read($srcHeap,act,alloc) && dtype(act) == pacman$Action
+	&& read($srcHeap,act,pacman$Action.FRAME) == read($srcHeap,r1,pacman$Record.FRAME))
+);
+
+  invariant  (forall act1: ref :: {read($srcHeap,act1,alloc)}
+	act1 != null && read($srcHeap,act1,alloc) && dtype(act1) == pacman$Action
+&&  read($srcHeap,act1,pacman$Action.DIRECTION) !=5
+==>
+	(exists act2 :ref :: {read($srcHeap,act2,alloc)}
+	act2 != null && read($srcHeap,act2,alloc) && dtype(act2) == pacman$Action
+	&&  read($srcHeap,act2,pacman$Action.DIRECTION) !=5
+	&&  act1 != act2 
+	&& read($srcHeap, act1, pacman$Action.DONEBY) == read($srcHeap, act2, pacman$Action.DONEBY) 
+	&& read($srcHeap, act2, pacman$Action.FRAME) - read($srcHeap, act1, pacman$Action.FRAME) < Pacman#ghost#INTERVAL
+	&&  read($srcHeap, act1, pacman$Action.FRAME) < Pacman#ghost#MAXFRAME
+	&&  read($srcHeap, act2, pacman$Action.FRAME) < Pacman#ghost#MAXFRAME
+));
+
+  // def
+  axiom (forall<alpha> $h: HeapType, $a1, $a2: ref, $f: Field alpha ::
+	$a1 != null && read($h,$a1,alloc) && dtype($a1) == pacman$Action
+&&	$a2 != null && read($h,$a2,alloc) && dtype($a2) == pacman$Action
+&&  $a1 != $a2 && read($h, $a1, pacman$Action.DONEBY) == read($h, $a1, pacman$Action.DONEBY)
+&&  read($h,$a1,pacman$Action.DIRECTION) !=5
+&&  read($h,$a2,pacman$Action.DIRECTION) !=5
+&&  read($h, $a1, pacman$Action.FRAME) - read($h, $a1, pacman$Action.FRAME) < Pacman#ghost#INTERVAL
+&&  read($h, $a1, pacman$Action.FRAME) < Pacman#ghost#MAXFRAME
+&&  read($h, $a2, pacman$Action.FRAME) < Pacman#ghost#MAXFRAME
+	==> isMovedWithin($h,$a2,$a1));
+*/
+=============
+
+
+
