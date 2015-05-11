@@ -9,39 +9,39 @@ Previously, we have developed the VerMTLr framework that allows rapid verifier c
 Overview of Repository
 ------
 1. Libraries
-2. The Source Files for ATL Transformation
+2. The Source Files for SimpleGT Transformation
 3. Encoding soundness verification
 4. Transformation contracts verification
-5. Regression Tests + Driver + Result
+5. Performance
 
 Libraries
 ------
-VeriATL system is driven by two essential Boogie Libraries:
+VeriGT system is driven by two essential Boogie Libraries:
 - Library for Metamodel & OCL [portal](https://github.com/VeriATL/VeriGT/blob/master/Prelude/LibOCL.bpl)
 - Library for EMFTVM bytecode formalisation [portal](https://github.com/VeriATL/VeriGT/blob/master/Prelude/Instr.bpl)
 
-The Source Files for ATL Transformation
+The Source Files for SimpleGT Transformation
 ------
-We demonstrate VeriATL system against ER2REL transformation. The source files of this transformation contain:
+We demonstrate VeriGT system against ER2REL transformation. The source files of this transformation contain:
 - Source (Pacman) metamodels [portal](https://github.com/VeriATL/VeriGT/blob/master/Source/Pacman.ecore)
 - Semantics of Pacman in SimpleGT [portal](https://github.com/VeriATL/VeriGT/blob/master/Source/Pacman.simplegt)
 
-Verifying sound encoding of ATL rules
+Verifying sound encoding of SimpleGT rules
 ------
-We verified the soundness of our encoding for the execution semantics of SimpleGT rules. To perform this verification, both metamodels and ATL specification are encoded in Boogie.
+We verified the soundness of our encoding for the execution semantics of SimpleGT rules. To perform this verification, both metamodels and SimpleGT specification are encoded in Boogie.
 - metamodels [portal](https://github.com/VeriATL/VeriGT/blob/master/Prelude/Metamodels.bpl)
 - **SimpleGT rules** [portal](https://github.com/VeriATL/VeriGT/tree/master/Rule_TranslationValidation)
 
 
 Transformation contracts verification
 ------
-Using the sound encoding of ATL rules, we can verify transformation specification against transformation contracts. We verify Pacman transformation against 3 OCL contracts:
+Using the sound encoding of SimpleGT rules, we can verify transformation specification against transformation contracts. We verify Pacman transformation against 3 OCL contracts:
 
 1. GemReachable [portal](https://github.com/VeriATL/VeriGT/blob/master/Pacman_TransformationCorrectness/PacmanP1.bpl)
 2. PacmanSurvive [portal](https://github.com/VeriATL/VeriGT/blob/master/Pacman_TransformationCorrectness/PacmanP2.bpl)
 3. PacmanMoved [portal](https://github.com/VeriATL/VeriGT/blob/master/Pacman_TransformationCorrectness/PacmanP3.bpl)
 
-To modularize the verification task, the encodings of ATL rules are encapsulated in this file [portal](https://github.com/VeriATL/VeriGT/blob/master/Prelude/ATLRules.whole.bpl).
+To modularize the verification task, the encodings of SimpleGT rules are encapsulated in this file [portal](https://github.com/VeriATL/VeriGT/blob/master/Prelude/ATLRules.whole.bpl).
 
 
 Performance
