@@ -17,36 +17,36 @@ Overview of Repository
 Libraries
 ------
 VeriATL system is driven by two essential Boogie Libraries:
-- Library for Metamodel & OCL [portal](https://github.com/VeriATL/VeriATL/blob/master/Prelude/LibOCL.bpl)
-- Library for EMFTVM bytecode formalisation [portal](https://github.com/VeriATL/VeriATL/blob/master/Prelude/Instr.bpl)
+- Library for Metamodel & OCL [portal](https://github.com/VeriATL/VeriGT/blob/master/Prelude/LibOCL.bpl)
+- Library for EMFTVM bytecode formalisation [portal](https://github.com/VeriATL/VeriGT/blob/master/Prelude/Instr.bpl)
 
 The Source Files for ATL Transformation
 ------
 We demonstrate VeriATL system against ER2REL transformation. The source files of this transformation contain:
-- Source (Pacman) metamodels [portal](https://github.com/VeriATL/VeriATL/tree/master/Sources)
-- Semantics of Pacman in SimpleGT [portal](https://github.com/VeriATL/VeriATL/blob/master/Sources/er2rel.atl)
+- Source (Pacman) metamodels [portal](https://github.com/VeriATL/VeriGT/blob/master/Source/Pacman.ecore)
+- Semantics of Pacman in SimpleGT [portal](https://github.com/VeriATL/VeriGT/blob/master/Source/Pacman.simplegt)
 
 Verifying sound encoding of ATL rules
 ------
 We verified the soundness of our encoding for the execution semantics of SimpleGT rules. To perform this verification, both metamodels and ATL specification are encoded in Boogie.
-- metamodels [portal](https://github.com/VeriATL/VeriATL/blob/master/Prelude/Metamodels.bpl)
-- **SimpleGT rules** [portal](https://github.com/VeriATL/VeriATL/tree/master/ATL_Rule_Encoding)
+- metamodels [portal](https://github.com/VeriATL/VeriGT/blob/master/Prelude/Metamodels.bpl)
+- **SimpleGT rules** [portal](https://github.com/VeriATL/VeriGT/tree/master/Rule_TranslationValidation)
 
 
 Transformation contracts verification
 ------
 Using the sound encoding of ATL rules, we can verify transformation specification against transformation contracts. We verify Pacman transformation against 3 OCL contracts:
 
-1. GemReachable [portal](https://github.com/VeriATL/VeriATL/blob/master/ATL_Correctness/ER2REL_Correctness_post1.bpl)
-2. PacmanSurvive [portal](https://github.com/VeriATL/VeriATL/blob/master/ATL_Correctness/ER2REL_Correctness_post2.bpl)
-3. PacmanMoved [portal](https://github.com/VeriATL/VeriATL/blob/master/ATL_Correctness/ER2REL_Correctness_post3.bpl)
+1. GemReachable [portal](https://github.com/VeriATL/VeriGT/blob/master/Pacman_TransformationCorrectness/PacmanP1.bpl)
+2. PacmanSurvive [portal](https://github.com/VeriATL/VeriGT/blob/master/Pacman_TransformationCorrectness/PacmanP2.bpl)
+3. PacmanMoved [portal](https://github.com/VeriATL/VeriGT/blob/master/Pacman_TransformationCorrectness/PacmanP3.bpl)
 
-To modularize the verification task, the encodings of ATL rules are encapsulated in this file [portal](https://github.com/VeriATL/VeriATL/blob/master/Prelude/ATLRules.whole.bpl).
+To modularize the verification task, the encodings of ATL rules are encapsulated in this file [portal](https://github.com/VeriATL/VeriGT/blob/master/Prelude/ATLRules.whole.bpl).
 
 
 Performance
 ------
-We also record the **performance** [portal](https://github.com/VeriATL/VeriATL/tree/master/UnitTesting/PerformanceData) of regression tests for reader who interested.
+We also record the **performance** [portal](https://github.com/VeriATL/VeriGT/tree/master/UnitTesting/Benchmark) of regression tests for reader who interested.
 
 
 ------
