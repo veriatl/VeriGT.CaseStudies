@@ -1,5 +1,11 @@
 procedure driver();
 requires $IsGoodHeap($srcHeap);
+requires (forall gs1,gs2: ref::
+	gs1 != null && read($srcHeap,gs1,alloc) && dtype(gs1) == pacman$GameState
+&&	gs2 != null && read($srcHeap,gs2,alloc) && dtype(gs2) == pacman$GameState
+==>
+	gs1 == gs2
+);
 requires (forall pac1,pac2: ref::
 	pac1 != null && read($srcHeap,pac1,alloc) && dtype(pac1) == pacman$Pacman
 &&	pac2 != null && read($srcHeap,pac2,alloc) && dtype(pac2) == pacman$Pacman
@@ -31,15 +37,19 @@ requires  !(forall<alpha> grid1, grid2: ref ::
 ==>  (read($srcHeap,grid1,pacman$Grid.hasPlayer) != null 
 	&& read($srcHeap,grid2,pacman$Grid.hasEnemy) != null)
 );
-
+requires (forall gs1: ref::
+	(gs1 != null && read($srcHeap,gs1,alloc) && dtype(gs1) == pacman$GameState && read($srcHeap,gs1,pacman$GameState.STATE)==3) ==>
+	(forall<alpha> grid1: ref :: grid1 != null && read($srcHeap,grid1,alloc) && dtype(grid1) == pacman$Grid && dtype(read($srcHeap,grid1,pacman$Grid.hasEnemy)) <: pacman$Ghost
+		==> !(dtype(read($srcHeap,grid1,pacman$Grid.hasPlayer)) <: pacman$Pacman) ));
+requires (forall gs1: ref::
+	(gs1 != null && read($srcHeap,gs1,alloc) && dtype(gs1) == pacman$GameState && read($srcHeap,gs1,pacman$GameState.STATE)==4) ==>
+	(forall<alpha> grid1: ref :: grid1 != null && read($srcHeap,grid1,alloc) && dtype(grid1) == pacman$Grid && dtype(read($srcHeap,grid1,pacman$Grid.hasEnemy)) <: pacman$Ghost
+		==> !(dtype(read($srcHeap,grid1,pacman$Grid.hasPlayer)) <: pacman$Pacman) ));
 modifies $srcHeap;
-
-ensures   !(forall<alpha> grid1, grid2: ref :: 
-	grid1 != null && read($srcHeap,grid1,alloc) && dtype(grid1) == pacman$Grid
-&&	grid2 != null && read($srcHeap,grid2,alloc) && dtype(grid2) == pacman$Grid
-==> ( read($srcHeap,grid1,pacman$Grid.hasPlayer) != null 
-	&& read($srcHeap,grid2,pacman$Grid.hasEnemy) != null)
-);
+ensures (forall gs1: ref::
+	(gs1 != null && read($srcHeap,gs1,alloc) && dtype(gs1) == pacman$GameState && read($srcHeap,gs1,pacman$GameState.STATE)==4) ==>
+	(forall<alpha> grid1: ref :: grid1 != null && read($srcHeap,grid1,alloc) && dtype(grid1) == pacman$Grid && dtype(read($srcHeap,grid1,pacman$Grid.hasEnemy)) <: pacman$Ghost
+		==> !(dtype(read($srcHeap,grid1,pacman$Grid.hasPlayer)) <: pacman$Pacman) ));
 
 
 implementation driver()
@@ -101,38 +111,27 @@ var b#11: bool;
 
 
 while(true)
-  invariant (forall<alpha> grid: ref :: 
-	grid != null && read(old($srcHeap),grid,alloc) && dtype(grid) == pacman$Grid 
-	==>
-		read($srcHeap, grid, alloc) 
-  );
-  invariant  (forall<alpha> grid: ref, f: Field alpha :: 
-	grid != null && read(old($srcHeap),grid,alloc) && dtype(grid) == pacman$Grid 
-	<==> grid != null && read($srcHeap,grid,alloc) && dtype(grid) == pacman$Grid  
-  );
-  invariant  (forall<alpha> grid: ref, f: Field alpha :: 
-	grid != null && read(old($srcHeap),grid,alloc) && dtype(grid) == pacman$Grid ==>
-		(read($srcHeap, grid, f) == read(old($srcHeap), grid, f)
-		|| f==pacman$Grid.hasPlayer || f==pacman$Grid.hasEnemy || f==pacman$Grid.hasGem)
-  );
-  invariant (forall<alpha> grid1, grid2: ref :: 
-	grid1 != null && read($srcHeap,grid1,alloc) && dtype(grid1) == pacman$Grid
-&&	grid2 != null && read($srcHeap,grid2,alloc) && dtype(grid2) == pacman$Grid
-	/* grid1 can equal to grid2 */
-	==>
-	reachable($srcHeap, grid1, grid2));
-  invariant (forall pac1,pac2: ref::
+invariant (forall gs1,gs2: ref::
+	gs1 != null && read($srcHeap,gs1,alloc) && dtype(gs1) == pacman$GameState
+&&	gs2 != null && read($srcHeap,gs2,alloc) && dtype(gs2) == pacman$GameState
+==>
+	gs1 == gs2
+);
+invariant (forall pac1,pac2: ref::
 	pac1 != null && read($srcHeap,pac1,alloc) && dtype(pac1) == pacman$Pacman
 &&	pac2 != null && read($srcHeap,pac2,alloc) && dtype(pac2) == pacman$Pacman
 ==>
 	pac1 == pac2
-); 
-  invariant   !(forall<alpha> grid1, grid2: ref :: 
-	grid1 != null && read($srcHeap,grid1,alloc) && dtype(grid1) == pacman$Grid
-&&	grid2 != null && read($srcHeap,grid2,alloc) && dtype(grid2) == pacman$Grid
-==> ( read($srcHeap,grid1,pacman$Grid.hasPlayer) != null 
-	&& read($srcHeap,grid2,pacman$Grid.hasEnemy) != null)
 );
+invariant (forall gs1: ref::
+	(gs1 != null && read($srcHeap,gs1,alloc) && dtype(gs1) == pacman$GameState && read($srcHeap,gs1,pacman$GameState.STATE)==3) ==>
+	(forall<alpha> grid1: ref :: grid1 != null && read($srcHeap,grid1,alloc) && dtype(grid1) == pacman$Grid && dtype(read($srcHeap,grid1,pacman$Grid.hasEnemy)) <: pacman$Ghost
+		==> !(dtype(read($srcHeap,grid1,pacman$Grid.hasPlayer)) <: pacman$Pacman) )); 
+invariant (forall gs1: ref::
+	(gs1 != null && read($srcHeap,gs1,alloc) && dtype(gs1) == pacman$GameState && read($srcHeap,gs1,pacman$GameState.STATE)==4) ==>
+	(forall<alpha> grid1: ref :: grid1 != null && read($srcHeap,grid1,alloc) && dtype(grid1) == pacman$Grid && dtype(read($srcHeap,grid1,pacman$Grid.hasEnemy)) <: pacman$Ghost
+		==> !(dtype(read($srcHeap,grid1,pacman$Grid.hasPlayer)) <: pacman$Pacman) ));
+
 {
 
 	match_PlayerMoveLeft:	
@@ -149,10 +148,13 @@ while(true)
 			grid2#0 := Seq#Index(todo,3);
 			grid1#0 := Seq#Index(todo,4);
 			act#0 := Seq#Index(todo,5);
-	
+
+
+ 
+
 			$srcHeap := update($srcHeap, s#0, pacman$GameState.STATE, 4);
 			$srcHeap := update($srcHeap, grid1#0, pacman$Grid.hasPlayer, null);
-			$srcHeap := update($srcHeap, grid2#0, pacman$Grid.hasPlayer, pac#0);
+			$srcHeap := update($srcHeap, grid2#0, pacman$Grid.hasPlayer, pac#0);			
 			$srcHeap := update($srcHeap, act#0, alloc, false);
 			
 			// update finished, Heap should still be in a valid state.
@@ -165,10 +167,11 @@ while(true)
 			goto restart;
 		}else{
 			goto match_GhostMoveLeft;
+			
 		}
 
 		
-	match_GhostMoveLeft:	
+	match_GhostMoveLeft:
 		havoc todo;
 		call todo := match_GhostMoveLeft();
 		goto apply_GhostMoveLeft;
@@ -192,7 +195,7 @@ while(true)
 			$srcHeap := update($srcHeap, grid1#5, pacman$Grid.hasEnemy, null);
 			$srcHeap := update($srcHeap, grid2#5, pacman$Grid.hasEnemy, ghost#5);
 			$srcHeap := update($srcHeap, act#5, alloc, false);
-			
+		
 			// update finished, Heap should still be in a valid state.
 
 
@@ -224,11 +227,6 @@ while(true)
 			grid#9 := Seq#Index(todo,4);
 
 
-			assert (forall<alpha> grid: ref :: 
-	grid != null && read(old($srcHeap),grid,alloc) && dtype(grid) == pacman$Grid 
-	==>
-		read($srcHeap, grid, alloc) 
-  );
 
 			
 			// newRecord
@@ -294,9 +292,7 @@ while(true)
 			$srcHeap := update($srcHeap, pac#10, alloc, false);
 
 			// todo
-			assert (forall pac1: ref:: pac1 != null && dtype(pac1) == pacman$Pacman
-				==> !read($srcHeap, pac1, alloc));
-			
+		
 			// exists RHS
 			
 			// Termination Metric 
@@ -319,7 +315,10 @@ while(true)
 			rec#11 := Seq#Index(todo,1);
 			pac#11 := Seq#Index(todo,2);
 
-
+			// [Important] the reason we can make such assumption, is because we have already pass the <Kill> state, so that we should have no grid that has both player and ghost. Unfortunately, current UpdateFrame is too week to guarantee this. One option is to make assumption as we did here. Or we could rewrite UpdateFrame to be stronger.
+			assume (forall<alpha> grid1: ref :: grid1 != null && read($srcHeap,grid1,alloc) && dtype(grid1) == pacman$Grid ==>
+	!(dtype(read($srcHeap,grid1,pacman$Grid.hasEnemy)) <: pacman$Ghost && dtype(read($srcHeap,grid1,pacman$Grid.hasPlayer)) <: pacman$Pacman));
+			
 			// newRecord
 			havoc recordNew#11;
 			assume recordNew#11 != null && !read($srcHeap, recordNew#11, alloc) && dtype(recordNew#11) == 
@@ -342,7 +341,7 @@ while(true)
 			// rec.alloc = false
 			$srcHeap := update($srcHeap, rec#11, alloc, false);
 			
-
+ 
 			
 			// exists RHS
 			
@@ -368,7 +367,6 @@ while(true)
 }
 
 survive:
-
 
 
 

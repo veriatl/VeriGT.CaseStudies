@@ -75,24 +75,24 @@ procedure OpCode#DupX1(stk: Seq BoxType) returns (newStk: Seq BoxType);
 
 //Instr: set [compile mechanism]
 /*
-
+assert Seq#Length(stk) >= 2;
+assert $Unbox(Seq#Index(stk, Seq#Length(stk)-2)) != null;
+	
 if(isCollection(FieldOfDecl(dtype($Unbox(Seq#Index(stk, Seq#Length(stk)-2))), _placeholder): Field (_infered))){
 	havoc $newCol;
 	assume dtype($newCol) == class._System.array;
-	assume $newCol != null && read($tarHeap, $newCol, alloc);
-	assume Seq#FromArray($tarHeap,$newCol) == Seq#Append(Seq#FromArray($tarHeap, read($tarHeap, $Unbox(Seq#Index(stk, Seq#Length(stk)-2)), FieldOfDecl(dtype($Unbox(Seq#Index(stk, Seq#Length(stk)-2))), _placeholder): Field (_infered))), Seq#FromArray($tarHeap,$Unbox(Seq#Index(stk, Seq#Length(stk)-1)));
+	assume $newCol != null && read($xHeap, $newCol, alloc);
+	assume Seq#FromArray($xHeap,$newCol) == Seq#Append(Seq#FromArray($xHeap, read($xHeap, $Unbox(Seq#Index(stk, Seq#Length(stk)-2)), FieldOfDecl(dtype($Unbox(Seq#Index(stk, Seq#Length(stk)-2))), _placeholder): Field (_infered))), Seq#FromArray($xHeap,$Unbox(Seq#Index(stk, Seq#Length(stk)-1)));
 
-	assert Seq#Length(stk) >= 2;
-	assert $Unbox(Seq#Index(stk, Seq#Length(stk)-2)) != null;
-	$tarHeap := update($tarHeap, $Unbox(Seq#Index(stk, Seq#Length(stk)-2)), 
+
+	$xHeap := update($xHeap, $Unbox(Seq#Index(stk, Seq#Length(stk)-2)), 
 					FieldOfDecl(dtype($Unbox(Seq#Index(stk, Seq#Length(stk)-2))), _placeholder): Field (_infered), 
 					$newCol
 					);
-	assume $IsGoodHeap($tarHeap);
+	assume $IsGoodHeap($xHeap);
 	stk := Seq#Take(stk, Seq#Length(stk)-2);	
 }else{
-	assert Seq#Length(stk) >= 2;
-	assert $Unbox(Seq#Index(stk, Seq#Length(stk)-2)) != null;
+
 	$xHeap := update($xHeap, $Unbox(Seq#Index(stk, Seq#Length(stk)-2)), 
 					FieldOfDecl(dtype($Unbox(Seq#Index(stk, Seq#Length(stk)-2))), _placeholder): Field (_infered), 
 					$Unbox(Seq#Index(stk, Seq#Length(stk)-1)));
@@ -101,7 +101,195 @@ if(isCollection(FieldOfDecl(dtype($Unbox(Seq#Index(stk, Seq#Length(stk)-2))), _p
 }
 */
 
+//Instr: delete o [compile mechanism]
+/*
+assert Seq#Length(stk) >= 1;
+assert $Unbox(Seq#Index(stk, Seq#Length(stk)-1)) != null;
+$xHeap := update($xHeap, $Unbox(Seq#Index(stk, Seq#Length(stk)-1)), alloc, false);
+stk := Seq#Take(stk, Seq#Length(stk)-1);
+*/   
+  
+
+
+  
+//Instr: add _Feature _o _v [compile mechanism], add _v to the end of _o._Feature
+/*
+
+
+var _o = $Unbox(Seq#Index(stk, Seq#Length(stk)-2));
+var _v = $Unbox(Seq#Index(stk, Seq#Length(stk)-1));
+	
+assert Seq#Length(stk) >= 2;
+assert $Unbox(Seq#Index(stk, Seq#Length(stk)-2)) != null;	
+assert isNotField(_Feature);	// it is part of the semantics, but not handled at now, a field is a static value/initializer/rule
+
+if(isCollection(FieldOfDecl(dtype(_o), _Feature): Field (_infered))){
+
+	havoc $newCol;
+	assume dtype($newCol) == class._System.array;
+	assume $newCol != null && read($xHeap, $newCol, alloc);
+	
+	if(dtype(_v) == class._System.array){	// _v is collection, add to the end of _o._Feature
+		assume Seq#FromArray($xHeap,$newCol) == Seq#Append(
+		Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))), 
+		Seq#FromArray($xHeap,_v));
+	}else{	// is EObject
+		assume Seq#FromArray($xHeap,$newCol) == Seq#Append(
+		Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))), 
+		Seq#Singleton(_v));
+	}
+	
+	$xHeap := update($xHeap, _o, 
+					FieldOfDecl(dtype(_o), _Feature): Field (_infered), 
+					$newCol
+					);
+	
+}else{
+	assert !isSet(read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered)));
+	assert _i == 0;
+	$xHeap := update($xHeap, _o, 
+					FieldOfDecl(dtype(_o), _Feature): Field (_infered), 
+					_v);
+	assert isSet(read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered)));
+}
+
+assume $IsGoodHeap($xHeap);
+stk := Seq#Take(stk, Seq#Length(stk)-2);
+
+
+
+*/     
+
+
+
+
+
+
+
+//Instr: insert _Feature, _o, _v, _i [compile mechanism] add _v to the index _i of _o._Feature
+/*
+
+var _o = $Unbox(Seq#Index(stk, Seq#Length(stk)-3));
+var _v = $Unbox(Seq#Index(stk, Seq#Length(stk)-2));
+var _i = $Unbox(Seq#Index(stk, Seq#Length(stk)-1));
+	
+assert Seq#Length(stk) >= 3;
+assert $Unbox(Seq#Index(stk, Seq#Length(stk)-3)) != null;	
+assert isNotField(_Feature);	// it is part of the semantics, but not handled at now, a field is a static value/initializer/rule
+
+if(isCollection(FieldOfDecl(dtype(_o), _Feature): Field (_infered))){
+	assert _i < Seq#Length(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))));
+	havoc $newCol;
+	assume dtype($newCol) == class._System.array;
+	assume $newCol != null && read($xHeap, $newCol, alloc);
+	
+	if(dtype(_v) == class._System.array){	// _v is collection, add to the end of _o._Feature
+		assume Seq#FromArray($xHeap,$newCol) == 
+		Seq#Append(
+			Seq#Append(
+				Seq#Take(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))), _i-1),
+				Seq#FromArray($xHeap,_v)),
+			Seq#Drop(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))), _i-1)
+		);
+		
+		
+	}else{	// is EObject
+		assume Seq#FromArray($xHeap,$newCol) == 
+		Seq#Append(
+			Seq#Append(
+				Seq#Take(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))), _i-1),
+				Seq#Singleton(_v)),
+			Seq#Drop(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))), _i-1)
+		);
+	}
+	
+	$xHeap := update($xHeap, _o, 
+					FieldOfDecl(dtype(_o), _Feature): Field (_infered), 
+					$newCol
+					);
+
+}else{
+	assert !isSet(read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered)));
+	assert _i == 0;
+	$xHeap := update($xHeap, _o, 
+					FieldOfDecl(dtype(_o), _Feature): Field (_infered), 
+					_v);
+	assert isSet(read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered)));
+}
+
+assume $IsGoodHeap($xHeap);
+stk := Seq#Take(stk, Seq#Length(stk)-3);
+*/  
+
+ 
+//Instr: remove Feature obj val  [compile mechanism]
+/*
+
+var _o = $Unbox(Seq#Index(stk, Seq#Length(stk)-2));
+var _v = $Unbox(Seq#Index(stk, Seq#Length(stk)-1));
+	
+assert Seq#Length(stk) >= 2;
+assert $Unbox(Seq#Index(stk, Seq#Length(stk)-2)) != null;	
+assert isNotField(_Feature);	// it is part of the semantics, but not handled at now, a field is a static value/initializer/rule
+
+if(isCollection(FieldOfDecl(dtype(_o), _Feature): Field (_infered))){
+
+	havoc $newCol;
+	assume dtype($newCol) == class._System.array;
+	assume $newCol != null && read($xHeap, $newCol, alloc);
+	
+	// remove v from _o._f
+	if(dtype(_v) == class._System.array){	
+		assume (forall i: int :: 0<=i && i<Seq#Length(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered)))) ==>
+			Seq#Contains(Seq#FromArray($xHeap),_v, Seq#Index(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))),i)) ==>
+			!Seq#Contains(Seq#FromArray($xHeap,$newCol), Seq#Index(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))),i)));
+	}else{	// is EObject
+		assume Seq#Contains(read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered)), _v) ==>
+			(forall i: int :: 0<=i && i<Seq#Length(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered)))) ==>
+				Seq#Index(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))),i) == _v ==>
+					Seq#FromArray($xHeap,$newCol) == 
+					Seq#Append(
+						Seq#Take(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))),i-1)
+						Seq#Drop(Seq#FromArray($xHeap, read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered))),i)
+					));
+	}
+	
+	$xHeap := update($xHeap, _o, 
+					FieldOfDecl(dtype(_o), _Feature): Field (_infered), 
+					$newCol
+					);
+	assume $IsGoodHeap($xHeap);
+}else{
+	if(read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered)) == null)
+	{
+		if(_v == null){
+			$xHeap := ...	// set to defult, most likely null
+			assume $IsGoodHeap($xHeap);
+			assume !isSet(read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered)));
+		}
+	}else{
+		if(read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered)) == _v){
+			$xHeap := ... 	// set to defult
+			assume $IsGoodHeap($xHeap);
+			assume !isSet(read($xHeap, _o, FieldOfDecl(dtype(_o), _Feature): Field (_infered)));
+		}
+	}
+
+	
+}
+
+
+stk := Seq#Take(stk, Seq#Length(stk)-2);
+
+
+
+
+*/      
+
    
+
+
+  
 // Instr: findme
 procedure OpCode#Findme(stk: Seq BoxType) returns(newStk: Seq BoxType);
   requires Seq#Length(stk) >= 2;
@@ -112,4 +300,17 @@ procedure OpCode#Findme(stk: Seq BoxType) returns(newStk: Seq BoxType);
 // Instr: getASM  
 procedure OpCode#GetASM(stk: Seq BoxType) returns(newStk: Seq BoxType);
   ensures newStk == Seq#Build(stk, $Box(Asm));
+  
+  
+  
+  
+// Instr: NOT
+procedure OpCode#Not(stk: Seq BoxType) returns(newStk: Seq BoxType);
+  ensures newStk == Seq#Build(Seq#Take(stk, Seq#Length(stk)-1), $Box(!$Unbox(OpCode#Top(stk))));
+  
+  
+procedure OpCode#FindType(stk: Seq BoxType, modelName:String, typeName: String) returns(newStk: Seq BoxType);  
+  ensures newStk == Seq#Build(stk, $Box(classifierTable[modelName, typeName]));
+
+
   

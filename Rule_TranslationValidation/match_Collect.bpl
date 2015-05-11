@@ -1,4 +1,4 @@
-procedure match_Collect() returns (res: Seq ref)
+procedure match_CollectTest() returns (res: Seq ref)
 ensures res==Seq#Empty() ==> (forall i: int :: inRange(i,0,Seq#Length(findPatterns_Collect($srcHeap)))==>	
 !(  read($srcHeap,Seq#Index(Seq#Index(findPatterns_Collect($srcHeap),i),0),pacman$GameState.STATE) == 5
 ));
@@ -53,7 +53,7 @@ var cursor: Seq ref;
 }
 
 
-procedure match_filter_Collect(s:ref, rec:ref, pac:ref, gem:ref, grid:ref) returns(r: bool);
+procedure match_filter_Collect(s:ref, rec:ref, pac:ref, gem:ref, grid:ref) returns(r: bool)
  requires s != null && read($srcHeap,s,alloc) && dtype(s) == pacman$GameState;
  requires rec != null && read($srcHeap,rec,alloc) && dtype(rec) == pacman$Record;
  requires pac != null && read($srcHeap,pac,alloc) && dtype(pac) == pacman$Pacman;
@@ -64,6 +64,36 @@ procedure match_filter_Collect(s:ref, rec:ref, pac:ref, gem:ref, grid:ref) retur
  requires read($srcHeap,grid,pacman$Grid.hasGem) == gem;
  ensures r <==> ( 
 		read($srcHeap,s,pacman$GameState.STATE) == 5);
-		
+{
+var s#9: ref;
+var rec#9: ref;
+var pac#9: ref;
+var gem#9: ref;
+var grid#9: ref;
+var stk: Seq BoxType;
+
+s#9,rec#9,pac#9,gem#9,grid#9 := s,rec,pac,gem,grid;
+
+stk := OpCode#Aux#InitStk();
+
+call stk := OpCode#Load(stk, s#9);
+
+// get GameState.State
+assert Seq#Length(stk) >= 1;
+assert $Unbox(Seq#Index(stk, Seq#Length(stk)-1)) != null;
+stk := Seq#Build(Seq#Take(stk, Seq#Length(stk)-1), $Box($srcHeap[$Unbox(Seq#Index(stk, Seq#Length(stk)-1)), FieldOfDecl(dtype($Unbox(Seq#Index(stk, Seq#Length(stk)-1))), _Field$STATE): Field (int)]));
+
+// push 5
+call stk := OpCode#Pushi(stk, 5);
+
+// invoke =~
+call stk := Native#OCLOperation#MatchingOperator
+	(stk, 
+	$Unbox(Seq#Index(stk,Seq#Length(stk)-1)): int,
+	$Unbox(Seq#Index(stk,Seq#Length(stk)-2)): int);
+
+r:= $Unbox(OpCode#Top(stk));
+call stk := OpCode#Pop(stk);
+}		
 
 

@@ -76,4 +76,35 @@ const unique TransientLink#rule: Field String;
 
 // [mmName, className]
 const classifierTable : [String, String] ClassName;
+  axiom classifierTable[_P,_Ghost] == pacman$Ghost;
+  axiom classifierTable[_Native,_Collection] == class._System.array;
+ 
+ 
+ 
+ 
+ 
+const unique _Field$STATE: NameFamily; 
+const unique _Field$FRAME: NameFamily; 
+const unique _Field$DONEBY: NameFamily; 
+const unique _Field$DIRECTION: NameFamily; 
+const unique _Field$hasEnemy: NameFamily; 
+
+
+
+
+
+ axiom (FieldOfDecl(pacman$GameState, _Field$STATE) == pacman$GameState.STATE);
+ axiom (FieldOfDecl(pacman$Action, _Field$FRAME) == pacman$Action.FRAME);
+ axiom (FieldOfDecl(pacman$Record, _Field$FRAME) == pacman$Record.FRAME);
+ axiom (FieldOfDecl(pacman$Action, _Field$DONEBY) == pacman$Action.DONEBY);
+ axiom (FieldOfDecl(pacman$Action, _Field$DIRECTION) == pacman$Action.DIRECTION);
+ axiom (FieldOfDecl(pacman$Grid, _Field$hasEnemy) == pacman$Grid.hasEnemy);
+ 
+ 
+ 
+const unique _P: String;
+const unique _Ghost: String;
+const unique _Native: String;
+const unique _Collection: String;
+ 
  

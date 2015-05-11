@@ -8,7 +8,15 @@ type String = Seq Char;
 type Char = int;
 
 
-
+// OCLIsKindOf
+procedure EMFTVM#OCL#isKindOf(stk: Seq BoxType) returns(newStk: Seq BoxType);
+  requires Seq#Length(stk) >= 2;
+  ensures newStk == Seq#Build(Seq#Take(stk, Seq#Length(stk)-2), 
+							  $Box(OCL#isKindOf(($Unbox(Seq#Index(stk, Seq#Length(stk)-2)): ref), 
+												($Unbox(Seq#Index(stk, Seq#Length(stk)-1)): ClassName))));
+  
+function OCL#isKindOf(ref, ClassName): bool;
+  axiom (forall r: ref, cl: ClassName :: OCL#isKindOf(r, cl) <==> dtype(r) <: cl);
 
 
 function String#ToUpper(String): String;

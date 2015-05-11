@@ -4,7 +4,9 @@ ensures res==Seq#Empty() ==> (forall i: int :: inRange(i,0,Seq#Length(findPatter
 	 && read($srcHeap,Seq#Index(Seq#Index(findPatterns_PlayerMoveLeft($srcHeap),i),5),pacman$Action.DONEBY) == 1
 	 && read($srcHeap,Seq#Index(Seq#Index(findPatterns_PlayerMoveLeft($srcHeap),i),5),pacman$Action.FRAME) == 
 			read($srcHeap, Seq#Index(Seq#Index(findPatterns_PlayerMoveLeft($srcHeap),i),1), pacman$Record.FRAME)
-	 && read($srcHeap,Seq#Index(Seq#Index(findPatterns_PlayerMoveLeft($srcHeap),i),5),pacman$Action.DIRECTION)==1)
+	 && read($srcHeap,Seq#Index(Seq#Index(findPatterns_PlayerMoveLeft($srcHeap),i),5),pacman$Action.DIRECTION)==1
+	 && !(dtype(read($srcHeap,Seq#Index(Seq#Index(findPatterns_PlayerMoveLeft($srcHeap),i),3), pacman$Grid.hasEnemy))<:pacman$Ghost)
+)
 );
 ensures res!=Seq#Empty() ==> 
        Seq#Contains(findPatterns_PlayerMoveLeft($srcHeap), res) 
@@ -13,6 +15,7 @@ ensures res!=Seq#Empty() ==>
 	&& read($srcHeap,Seq#Index(res,5),pacman$Action.FRAME) == 
 			read($srcHeap, Seq#Index(res,1), pacman$Record.FRAME)
 	&& read($srcHeap,Seq#Index(res,5),pacman$Action.DIRECTION)==1
+	&& !(dtype(read($srcHeap,Seq#Index(res,3), pacman$Grid.hasEnemy))<:pacman$Ghost)
 ;
 
 procedure match_GhostMoveLeft() returns (res: Seq ref);
@@ -52,11 +55,13 @@ ensures res!=Seq#Empty() ==>
 
 procedure match_UpdateFrame() returns (res: Seq ref);
 ensures res==Seq#Empty() ==> (forall i: int :: inRange(i,0,Seq#Length(findPatterns_UpdateFrame($srcHeap)))==>	
-!(  read($srcHeap,Seq#Index(Seq#Index(findPatterns_UpdateFrame($srcHeap),i),0),pacman$GameState.STATE) == 5
+!(  read($srcHeap,Seq#Index(Seq#Index(findPatterns_UpdateFrame($srcHeap),i),0),pacman$GameState.STATE) == 5 
 ));
 ensures res!=Seq#Empty() ==> 
        Seq#Contains(findPatterns_UpdateFrame($srcHeap), res) 
 	&& read($srcHeap,Seq#Index(res,0),pacman$GameState.STATE) == 5
+	
+
 ;
 
 

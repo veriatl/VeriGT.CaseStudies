@@ -160,6 +160,9 @@ while(true)
 			$srcHeap := update($srcHeap, grid1#0, pacman$Grid.hasPlayer, null);
 			$srcHeap := update($srcHeap, grid2#0, pacman$Grid.hasPlayer, pac#0);
 			$srcHeap := update($srcHeap, act#0, alloc, false);
+			// havoc act#0; as a alternative to dispose act#0
+			// act#0 := null;
+			
 			
 			// update finished, Heap should still be in a valid state.
 

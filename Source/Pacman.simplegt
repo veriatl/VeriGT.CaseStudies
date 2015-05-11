@@ -13,6 +13,7 @@ rule PlayerMoveLeft{
 		grid2: P!Grid,
 		grid1: P!Grid(hasPlayer=~pac, left=~grid2),
 		act : P!Action(DONEBY=~1, FRAME=~rec.FRAME, DIRECTION=~1)
+	not grid2: P!Grid(hasEnemy=~ghost), ghost: P!Ghost
 	to 
 		s : P!GameState(STATE=~4, record=~rec),
 		rec: P!Record,
@@ -29,6 +30,7 @@ rule PlayerMoveRight{
 		grid2: P!Grid,
 		grid1: P!Grid(hasPlayer=~pac, right=~grid2),
 		act : P!Action(DONEBY=~1, FRAME=~rec.FRAME, DIRECTION=~2)
+	not grid2: P!Grid(hasEnemy=~ghost), ghost: P!Ghost
 	to 
 		s : P!GameState(STATE=~4, record=~rec),
 		rec: P!Record,
@@ -45,6 +47,7 @@ rule PlayerMoveTop{
 		grid2: P!Grid,
 		grid1: P!Grid(hasPlayer=~pac, top=~grid2),
 		act : P!Action(DONEBY=~1, FRAME=~rec.FRAME, DIRECTION=~3)
+	not grid2: P!Grid(hasEnemy=~ghost), ghost: P!Ghost
 	to 
 		s : P!GameState(STATE=~4, record=~rec),
 		rec: P!Record,
@@ -61,6 +64,7 @@ rule PlayerMoveBottom{
 		grid2: P!Grid,
 		grid1: P!Grid(hasPlayer=~pac, bottom=~grid2),
 		act : P!Action(DONEBY=~1, FRAME=~rec.FRAME, DIRECTION=~4)
+	not grid2: P!Grid(hasEnemy=~ghost), ghost: P!Ghost
 	to 
 		s : P!GameState(STATE=~4, record=~rec),
 		rec: P!Record,
@@ -202,3 +206,5 @@ rule UpdateFrame{
 		pac : P!Pacman,
 		recNew: P!Record(FRAME=~rec.FRAME+1, SCORE=~rec.SCORE)
 }
+
+

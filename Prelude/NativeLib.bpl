@@ -8,6 +8,16 @@ var $tarHeap : HeapType where $IsGoodHeap($tarHeap);
 var $linkHeap : HeapType where $IsGoodHeap($tarHeap);
 
 
+procedure Native#OCLOperation#MatchingOperator<alpha>
+	(stk: Seq BoxType, arg1: alpha, arg2: alpha)
+returns 
+	(newStk: Seq BoxType);
+  requires Seq#Length(stk) >= 2;
+  ensures newStk == Seq#Build(Seq#Take(stk, Seq#Length(stk)-2),
+    $Box(arg1 == arg2)
+  );
+
+
 
 function getTarsBySrcs(Seq ref): ref;
 
@@ -190,8 +200,8 @@ function NTransientLinkSet#getLinksByRule(h:HeapType, rule: String): Seq ref;
 //-------- Helper Function -------
 //--------------------------------
 
-function top(Seq BoxType): BoxType;
-  axiom (forall stk: Seq BoxType :: top(stk) == Seq#Index(stk, Seq#Length(stk)-1));
+function OpCode#Top(Seq BoxType): BoxType;
+  axiom (forall stk: Seq BoxType :: OpCode#Top(stk) == Seq#Index(stk, Seq#Length(stk)-1));
 
 
 
