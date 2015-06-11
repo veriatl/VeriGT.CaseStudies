@@ -424,3 +424,9 @@ procedure OCL#Bag#Flatten<T> (stk: Seq BoxType, b: MultiSet T) returns (newStk: 
 // ---------------------------------------------------------------
 // -- OCL: Integer, X operations             ---------------------
 // ---------------------------------------------------------------
+procedure OCL#Integer#Plus (stk: Seq BoxType) returns (newStk: Seq BoxType);
+  requires Seq#Length(stk) >= 2;
+  ensures newStk == Seq#Build(Seq#Take(stk, Seq#Length(stk)-2), $Box(
+	($Unbox(Seq#Index(stk,Seq#Length(stk)-2)):int) +
+	($Unbox(Seq#Index(stk,Seq#Length(stk)-1)):int)
+  ));  

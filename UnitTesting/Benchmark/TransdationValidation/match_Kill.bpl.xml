@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<boogie version="2.2.30705.1126" commandLine="boogie.exe /nologo /xml:match_Kill.bpl.xml Prelude/auxPredicate.bpl Prelude/StructuralPatternMatching.bpl Prelude/ATLRules.whole.bpl Prelude/LibOCL.bpl Prelude/instr.bpl Prelude/nativeLib.bpl Prelude/metamodels.bpl match_Kill.bpl">
+  <file name="match_Kill.bpl">
+    <fileFragment name="Prelude/auxPredicate.bpl" />
+    <fileFragment name="Prelude/StructuralPatternMatching.bpl" />
+    <fileFragment name="Prelude/ATLRules.whole.bpl" />
+    <fileFragment name="Prelude/LibOCL.bpl" />
+    <fileFragment name="Prelude/instr.bpl" />
+    <fileFragment name="Prelude/nativeLib.bpl" />
+    <fileFragment name="Prelude/metamodels.bpl" />
+    <fileFragment name="match_Kill.bpl" />
+    <method name="NTransientLink#setRule" startTime="2015-06-10 13:35:58Z">
+      <conclusion endTime="2015-06-10 13:35:59Z" duration="1.2948022" outcome="correct" />
+    </method>
+    <method name="NTransientLink#addSourceElement" startTime="2015-06-10 13:35:59Z">
+      <conclusion endTime="2015-06-10 13:35:59Z" duration="0.0156" outcome="correct" />
+    </method>
+    <method name="NTransientLink#addTargetElement" startTime="2015-06-10 13:35:59Z">
+      <conclusion endTime="2015-06-10 13:35:59Z" duration="0" outcome="correct" />
+    </method>
+    <method name="NTransientLink#getSourceElement" startTime="2015-06-10 13:35:59Z">
+      <conclusion endTime="2015-06-10 13:35:59Z" duration="0.0156" outcome="correct" />
+    </method>
+    <method name="NTransientLink#getTargetElement" startTime="2015-06-10 13:35:59Z">
+      <conclusion endTime="2015-06-10 13:35:59Z" duration="0" outcome="correct" />
+    </method>
+    <method name="match_KillTest" startTime="2015-06-10 13:35:59Z">
+      <conclusion endTime="2015-06-10 13:35:59Z" duration="0.0156001" outcome="correct" />
+    </method>
+    <method name="match_filter_Kill" startTime="2015-06-10 13:35:59Z">
+      <conclusion endTime="2015-06-10 13:35:59Z" duration="0.0156" outcome="correct" />
+    </method>
+  </file>
+</boogie>

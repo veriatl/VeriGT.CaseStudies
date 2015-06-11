@@ -1,32 +1,13 @@
 /*
 pacman moves within interval (invariant)
-- prove by using ghost variable col, idx,
+- prove by using ghost variable col, idx, in apply_PlayerMoveLeft
 - explicit control how this two variable being changed during the simpleGT scheduling
 - make sure the changes not break the invariant
 */
-
-var col: Seq ref;
-var idx: int;
-
 	
-
-
 procedure driver();
-requires (forall i: int :: 0<=i && i<Seq#Length(col) ==>
-Seq#Index(col,i) != null 
-&& read($srcHeap, Seq#Index(col,i), alloc) 
-&& dtype(Seq#Index(col,i)) == pacman$Action
-&& read($srcHeap, Seq#Index(col,i), pacman$Action.DONEBY) == 1
-&& read($srcHeap, Seq#Index(col,i), pacman$Action.DIRECTION) != 5
-);
-requires (forall i: int :: 0<=i && i<Seq#Length(col)-1 ==>
-	read($srcHeap, Seq#Index(col,i+1), pacman$Action.FRAME) - read($srcHeap, Seq#Index(col,i), pacman$Action.FRAME) < Pacman#ghost#INTERVAL	
-);
-
-requires (forall i,j: int :: 0<=i && i<j && j<Seq#Length(col) ==>
-	Seq#Index(col,i)!=Seq#Index(col,j)
-);	
-
+requires lemma_col($srcHeap, col);	
+requires $Well_form($srcHeap);
 modifies $srcHeap, col, idx;
 ensures (forall i: int :: 0<=i && i<Seq#Length(col)-1 ==>
 	read($srcHeap, Seq#Index(col,i+1), pacman$Action.FRAME) - read($srcHeap, Seq#Index(col,i), pacman$Action.FRAME) < Pacman#ghost#INTERVAL	
@@ -41,7 +22,8 @@ Seq#Index(col,i) != null
 && read($srcHeap, Seq#Index(col,i), pacman$Action.DONEBY) == 1
 && read($srcHeap, Seq#Index(col,i), pacman$Action.DIRECTION) != 5
 );
-
+ensures $Well_form($srcHeap);
+ensures lemma_col($srcHeap, col);
 
 implementation driver()
 {
@@ -55,12 +37,24 @@ var grid1#0: ref;
 var grid2#0: ref;
 var act#0: ref;
 
+var s#4: ref;
+var rec#4: ref;
+var pac#4: ref;
+var grid1#4: ref;
+var act#4: ref;
+
 var s#5: ref;
 var rec#5: ref;
 var ghost#5: ref;
 var grid1#5: ref;
 var grid2#5: ref;
 var act#5: ref;
+
+var s#8: ref;
+var rec#8: ref;
+var ghost#8: ref;
+var grid1#8: ref;
+var act#8: ref;
 
 var s#9: ref;
 var rec#9: ref;
@@ -98,22 +92,10 @@ var P#11: Seq (Seq ref);
 var b#11: bool;
 
 
-
-			
+		
 while(true)
-invariant  (forall i: int :: 0<=i && i<Seq#Length(col)-1 ==>
-	read($srcHeap, Seq#Index(col,i+1), pacman$Action.FRAME) - read($srcHeap, Seq#Index(col,i), pacman$Action.FRAME) < Pacman#ghost#INTERVAL
-);
-invariant (forall i,j: int :: 0<=i && i<j && j<Seq#Length(col) ==>
-				Seq#Index(col,i)!=Seq#Index(col,j)
-			);
-invariant (forall i: int :: 0<=i && i<Seq#Length(col) ==>
-Seq#Index(col,i) != null 
-&& read($srcHeap, Seq#Index(col,i), alloc) 
-&& dtype(Seq#Index(col,i)) == pacman$Action
-&& read($srcHeap, Seq#Index(col,i), pacman$Action.DONEBY) == 1
-&& read($srcHeap, Seq#Index(col,i), pacman$Action.DIRECTION) != 5
-);
+invariant lemma_col($srcHeap, col);
+invariant $Well_form($srcHeap);
 {
 
 	match_PlayerMoveLeft:	
@@ -124,35 +106,45 @@ Seq#Index(col,i) != null
 	apply_PlayerMoveLeft:
 		if(todo!=Seq#Empty()){
 			// execute applier block start
-			s#0 := Seq#Index(todo,0);
-			rec#0 := Seq#Index(todo,1);
-			pac#0 := Seq#Index(todo,2);
-			grid2#0 := Seq#Index(todo,3);
-			grid1#0 := Seq#Index(todo,4);
-			act#0 := Seq#Index(todo,5);
-
-
+			
 			// ideally idx == 0;
 			havoc idx;
-			assume Seq#Contains(col,act#0);
-			assume Seq#Index(col,idx) == act#0;
-			assume 0<=idx && idx<Seq#Length(col);
+
+			call apply_PlayerMoveLeft(todo);
+			
 
 			
+			// havoc act#0; as a alternative to dispose act#0
+			// act#0 := null;
 			
-			$srcHeap := update($srcHeap, s#0, pacman$GameState.STATE, 4);
-			$srcHeap := update($srcHeap, grid1#0, pacman$Grid.hasPlayer, null);
-			$srcHeap := update($srcHeap, grid2#0, pacman$Grid.hasPlayer, pac#0);
-			$srcHeap := update($srcHeap, act#0, alloc, false);
 			
-			// ghost update
-			col := Seq#Drop(col,idx+1);
+			// update finished, Heap should still be in a valid state.
 
+			// exists RHS
+			
+			// Termination Metric 
 
+			// restart
+			goto restart;
+		}else{
+			goto match_PlayerStay;
+		}
 
+	match_PlayerStay:	
+		havoc todo;
+		call todo := match_PlayerStay();
+		goto apply_PlayerStay;
+				
+	apply_PlayerStay:
+		if(todo!=Seq#Empty()){
+			// execute applier block start
+			call apply_PlayerStay(todo);
+			// havoc act#0; as a alternative to dispose act#0
+			// act#0 := null;
+			
+			
+			// update finished, Heap should still be in a valid state.
 
-
-	
 			// exists RHS
 			
 			// Termination Metric 
@@ -164,32 +156,40 @@ Seq#Index(col,i) != null
 		}
 
 		
-		
 	match_GhostMoveLeft:	
 		havoc todo;
 		call todo := match_GhostMoveLeft();
 		goto apply_GhostMoveLeft;
-		
+
+				
 	apply_GhostMoveLeft:
 		if(todo!=Seq#Empty()){
 			// execute applier block start
-			s#5 := Seq#Index(todo,0);
-			rec#5 := Seq#Index(todo,1);
-			ghost#5 := Seq#Index(todo,2);
-			grid2#5 := Seq#Index(todo,3);
-			grid1#5 := Seq#Index(todo,4);
-			act#5 := Seq#Index(todo,5);
-
-
-			
-
-			
-			$srcHeap := update($srcHeap, s#5, pacman$GameState.STATE, 5);
-			$srcHeap := update($srcHeap, grid1#5, pacman$Grid.hasEnemy, null);
-			$srcHeap := update($srcHeap, grid2#5, pacman$Grid.hasEnemy, ghost#5);
-			$srcHeap := update($srcHeap, act#5, alloc, false);
-			
+			call apply_GhostMoveLeft(todo);
 			// update finished, Heap should still be in a valid state.
+
+			// exists RHS
+			
+			// Termination Metric 
+
+			// restart
+			goto restart;
+		}else{
+			goto match_GhostStay;
+		}
+	
+	match_GhostStay:	
+		havoc todo;
+		call todo := match_GhostStay();
+		goto apply_GhostStay;
+
+				
+	apply_GhostStay:
+		if(todo!=Seq#Empty()){
+			// execute applier block start
+			call apply_GhostStay(todo);
+			// update finished, Heap should still be in a valid state.
+
 
 
 
@@ -202,57 +202,26 @@ Seq#Index(col,i) != null
 		}else{
 			goto match_Collect;
 		}
-	
-
+		
 	match_Collect:	
 		havoc todo;
 		call todo := match_Collect();
 		goto apply_Collect;
-				
+		
 	apply_Collect:
 		if(todo!=Seq#Empty()){
-			// execute applier block start
-			s#9 := Seq#Index(todo,0);
-			rec#9 := Seq#Index(todo,1);
-			pac#9 := Seq#Index(todo,2);
-			gem#9 := Seq#Index(todo,3);
-			grid#9 := Seq#Index(todo,4);
-
-
-			
-
-			
+		
 			// newRecord
 			havoc recordNew#9;
-			assume recordNew#9 != null && !read($srcHeap, recordNew#9, alloc) && dtype(recordNew#9) == 
-			pacman$Record;
-			$srcHeap := update($srcHeap, recordNew#9, alloc, true);
-			assume $IsGoodHeap($srcHeap);
+			assume recordNew#9 != null && !read($srcHeap, recordNew#9, alloc) && dtype(recordNew#9) == pacman$Record;
 			
-			// gameState.record = newRecord
-			$srcHeap := update($srcHeap, s#9, pacman$GameState.record, recordNew#9);
-			
-			// initialize newRecord
-			$srcHeap := update($srcHeap, recordNew#9, pacman$Record.FRAME, read($srcHeap, rec#9, pacman$Record.FRAME));
-			
-			$srcHeap := update($srcHeap, recordNew#9, pacman$Record.SCORE, read($srcHeap, rec#9, pacman$Record.SCORE)+100);
-			
+	
+			// execute applier block start
 
-			
-			// Grid.hasGem = null
-			$srcHeap := update($srcHeap, grid#9, pacman$Grid.hasGem, null);
-			
-			// gem.alloc = false
-			$srcHeap := update($srcHeap, gem#9, alloc, false);
-			
-			// rec.alloc = false
-			$srcHeap := update($srcHeap, rec#9, alloc, false);
-			
+			call apply_Collect(todo, recordNew#9);
 			// update finished, Heap should still be in a valid state.
-			
 
-
-			
+		
 			// exists RHS
 			
 			// Termination Metric 
@@ -268,23 +237,13 @@ Seq#Index(col,i) != null
 		havoc todo;
 		call todo := match_Kill();
 		goto apply_Kill;
-				
+		
 	apply_Kill:
 		if(todo!=Seq#Empty()){
 			// execute applier block start
-			s#10 := Seq#Index(todo,0);
-			ghost#10 := Seq#Index(todo,1);
-			pac#10 := Seq#Index(todo,2);
-			grid#10 := Seq#Index(todo,3);
 
-
-			// Grid.hasPlayer = null
-			$srcHeap := update($srcHeap, grid#10, pacman$Grid.hasPlayer, null);
-				
-			$srcHeap := update($srcHeap, s#10, pacman$GameState.STATE, 6);
-			
-			// pacman.alloc = false
-			$srcHeap := update($srcHeap, pac#10, alloc, false);
+			call apply_Kill(todo);
+			// todo
 
 			
 			// exists RHS
@@ -301,39 +260,16 @@ Seq#Index(col,i) != null
 		havoc todo;
 		call todo := match_UpdateFrame();
 		goto apply_UpdateFrame;
-				
+		
 	apply_UpdateFrame:
 		if(todo!=Seq#Empty()){
-			// execute applier block start
-			s#11 := Seq#Index(todo,0);
-			rec#11 := Seq#Index(todo,1);
-			pac#11 := Seq#Index(todo,2);
-
-
+		
 			// newRecord
 			havoc recordNew#11;
-			assume recordNew#11 != null && !read($srcHeap, recordNew#11, alloc) && dtype(recordNew#11) == 
-			pacman$Record;
-			$srcHeap := update($srcHeap, recordNew#11, alloc, true);
-			assume $IsGoodHeap($srcHeap);
-
-			
-			// gameState.STATE = 3
-			$srcHeap := update($srcHeap, s#11, pacman$GameState.STATE, 3);
-			
-			// gameState.record = newRecord
-			$srcHeap := update($srcHeap, s#11, pacman$GameState.record, recordNew#11);
-			
-			// initialize newRecord
-			$srcHeap := update($srcHeap, recordNew#11, pacman$Record.FRAME, read($srcHeap, rec#11, pacman$Record.FRAME)+1);
-			
-			$srcHeap := update($srcHeap, recordNew#11, pacman$Record.SCORE, read($srcHeap, rec#11, pacman$Record.SCORE));	
-
-			// rec.alloc = false
-			$srcHeap := update($srcHeap, rec#11, alloc, false);
-			
-
-			
+			assume recordNew#11 != null && !read($srcHeap, recordNew#11, alloc) && dtype(recordNew#11) == pacman$Record;
+	
+			// execute applier block start
+			call apply_UpdateFrame(todo, recordNew#11); 		
 			// exists RHS
 			
 			// Termination Metric 
@@ -344,11 +280,6 @@ Seq#Index(col,i) != null
 			goto nextRule;
 		}
 	
-
-
-
-	
-		
 	nextRule:	
 		goto survive;	
 
@@ -359,7 +290,6 @@ Seq#Index(col,i) != null
 }
 
 survive:
-
 
 
 }

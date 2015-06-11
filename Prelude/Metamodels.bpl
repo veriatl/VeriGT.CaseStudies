@@ -88,17 +88,25 @@ const unique _Field$FRAME: NameFamily;
 const unique _Field$DONEBY: NameFamily; 
 const unique _Field$DIRECTION: NameFamily; 
 const unique _Field$hasEnemy: NameFamily; 
+const unique _Field$hasPlayer: NameFamily; 
+const unique _Field$hasGem: NameFamily; 
+const unique _Field$record: NameFamily; 
+const unique _Field$SCORE: NameFamily; 
 
 
 
 
 
  axiom (FieldOfDecl(pacman$GameState, _Field$STATE) == pacman$GameState.STATE);
+ axiom (FieldOfDecl(pacman$GameState, _Field$record) == pacman$GameState.record);
  axiom (FieldOfDecl(pacman$Action, _Field$FRAME) == pacman$Action.FRAME);
  axiom (FieldOfDecl(pacman$Record, _Field$FRAME) == pacman$Record.FRAME);
+ axiom (FieldOfDecl(pacman$Record, _Field$SCORE) == pacman$Record.SCORE);
  axiom (FieldOfDecl(pacman$Action, _Field$DONEBY) == pacman$Action.DONEBY);
  axiom (FieldOfDecl(pacman$Action, _Field$DIRECTION) == pacman$Action.DIRECTION);
  axiom (FieldOfDecl(pacman$Grid, _Field$hasEnemy) == pacman$Grid.hasEnemy);
+ axiom (FieldOfDecl(pacman$Grid, _Field$hasPlayer) == pacman$Grid.hasPlayer);
+ axiom (FieldOfDecl(pacman$Grid, _Field$hasGem) == pacman$Grid.hasGem);
  
  
  

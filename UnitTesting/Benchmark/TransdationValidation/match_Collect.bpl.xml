@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<boogie version="2.2.30705.1126" commandLine="boogie.exe /nologo /xml:match_Collect.bpl.xml Prelude/auxPredicate.bpl Prelude/StructuralPatternMatching.bpl Prelude/ATLRules.whole.bpl Prelude/LibOCL.bpl Prelude/instr.bpl Prelude/nativeLib.bpl Prelude/metamodels.bpl match_Collect.bpl">
+  <file name="match_Collect.bpl">
+    <fileFragment name="Prelude/auxPredicate.bpl" />
+    <fileFragment name="Prelude/StructuralPatternMatching.bpl" />
+    <fileFragment name="Prelude/ATLRules.whole.bpl" />
+    <fileFragment name="Prelude/LibOCL.bpl" />
+    <fileFragment name="Prelude/instr.bpl" />
+    <fileFragment name="Prelude/nativeLib.bpl" />
+    <fileFragment name="Prelude/metamodels.bpl" />
+    <fileFragment name="match_Collect.bpl" />
+    <method name="NTransientLink#setRule" startTime="2015-06-10 13:35:42Z">
+      <conclusion endTime="2015-06-10 13:35:44Z" duration="1.5756027" outcome="correct" />
+    </method>
+    <method name="NTransientLink#addSourceElement" startTime="2015-06-10 13:35:44Z">
+      <conclusion endTime="2015-06-10 13:35:44Z" duration="0" outcome="correct" />
+    </method>
+    <method name="NTransientLink#addTargetElement" startTime="2015-06-10 13:35:44Z">
+      <conclusion endTime="2015-06-10 13:35:44Z" duration="0.0156001" outcome="correct" />
+    </method>
+    <method name="NTransientLink#getSourceElement" startTime="2015-06-10 13:35:44Z">
+      <conclusion endTime="2015-06-10 13:35:44Z" duration="0" outcome="correct" />
+    </method>
+    <method name="NTransientLink#getTargetElement" startTime="2015-06-10 13:35:44Z">
+      <conclusion endTime="2015-06-10 13:35:44Z" duration="0" outcome="correct" />
+    </method>
+    <method name="match_CollectTest" startTime="2015-06-10 13:35:44Z">
+      <conclusion endTime="2015-06-10 13:35:44Z" duration="0.0468001" outcome="correct" />
+    </method>
+    <method name="match_filter_Collect" startTime="2015-06-10 13:35:44Z">
+      <conclusion endTime="2015-06-10 13:35:44Z" duration="0" outcome="correct" />
+    </method>
+  </file>
+</boogie>

@@ -97,6 +97,88 @@ function findPatterns_PlayerMoveLeft(h: HeapType): Seq (Seq ref);
 	)	
 	);	
 	
+/* ------------------------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------------------ */
+
+function findPatterns_PlayerStay(h: HeapType): Seq (Seq ref);
+	// structure filter
+	axiom (forall __heap: HeapType :: Seq#Length(findPatterns_PlayerStay(__heap)) >= 0);
+	// 5 element in total
+	axiom (forall __heap: HeapType ::
+		(forall i: int :: inRange(i,0,Seq#Length(findPatterns_PlayerStay(__heap))) ==> 
+			Seq#Length(Seq#Index(findPatterns_PlayerStay(__heap),i)) == 5)
+	);
+	// 1. pacman!Gamestate
+	axiom (forall __heap: HeapType ::	
+	 (forall i: int :: inRange(i,0,Seq#Length(findPatterns_PlayerStay(__heap))) ==> 
+		Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),0) != null 
+		&& read(__heap,Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),0),alloc) 
+		&& dtype(Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),0)) == pacman$GameState
+	 )
+	);
+	// 2. pacman!Record
+	axiom (forall __heap: HeapType ::
+		(forall i: int :: inRange(i,0,Seq#Length(findPatterns_PlayerStay(__heap))) ==> 
+			Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),1) != null 
+			&& read(__heap,Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),1),alloc) 
+			&& dtype(Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),1)) == pacman$Record
+		)
+	);
+	// 3. pacman!Pacman
+	axiom (forall __heap: HeapType ::
+		(forall i: int :: inRange(i,0,Seq#Length(findPatterns_PlayerStay(__heap))) ==> 
+			Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),2) != null 
+			&& read(__heap,Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),2),alloc) 
+			&& dtype(Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),2)) == pacman$Pacman
+		)
+	);
+	// 4. pacman!Grid
+	axiom (forall __heap: HeapType ::
+	(forall i: int :: inRange(i,0,Seq#Length(findPatterns_PlayerStay(__heap))) ==> 
+		Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),3) != null 
+		&& read(__heap,Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),3),alloc) 
+		&& dtype(Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),3)) == pacman$Grid
+	)
+	);
+	// 5. pacman!Action
+	axiom (forall __heap: HeapType ::
+	(forall i: int :: inRange(i,0,Seq#Length(findPatterns_PlayerStay(__heap))) ==> 
+		Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),4) != null 
+		&& read(__heap,Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),4),alloc) 
+		&& dtype(Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),4)) == pacman$Action
+	)
+	);			
+	// s.record=~rec			
+	axiom (forall __heap: HeapType ::
+	(forall i: int :: inRange(i,0,Seq#Length(findPatterns_PlayerStay(__heap))) ==> 
+		read(__heap, Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),0), pacman$GameState.record) == Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),1)	
+	)
+	);	
+	// grid1.hasPlayer=~pac
+	axiom (forall __heap: HeapType ::
+	(forall i: int :: inRange(i,0,Seq#Length(findPatterns_PlayerStay(__heap))) ==> 
+		read(__heap, Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),3), pacman$Grid.hasPlayer) == Seq#Index(Seq#Index(findPatterns_PlayerStay(__heap),i),2)	
+	)
+	);			
+	// 
+	axiom (forall __heap: HeapType ::
+	(forall s,rec,pac,grid1,act: ref ::
+		s != null && read(__heap,s,alloc) && dtype(s) == pacman$GameState
+	&&	rec != null && read(__heap,rec,alloc) && dtype(rec) == pacman$Record
+	&&	pac != null && read(__heap,pac,alloc) && dtype(pac) == pacman$Pacman
+	&&	grid1 != null && read(__heap,grid1,alloc) && dtype(grid1) == pacman$Grid
+	&&	act != null && read(__heap,act,alloc) && dtype(act) == pacman$Action
+	&&  read(__heap, s, pacman$GameState.record) == rec
+	&&  read(__heap, grid1, pacman$Grid.hasPlayer) == pac
+		==> Seq#Contains(findPatterns_PlayerStay(__heap), Seq#Build(Seq#Build(Seq#Build(Seq#Build(Seq#Singleton(s), rec), pac), grid1), act))
+	)	
+	);	
+	
+
+
+
+
 
 /* ------------------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------------------ */
@@ -200,7 +282,83 @@ function findPatterns_GhostMoveLeft(h: HeapType): Seq (Seq ref);
 	)	
 	);	
 
+/* ------------------------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------------------ */
+/* ------------------------------------------------------------------------------------ */
 
+function findPatterns_GhostStay(h: HeapType): Seq (Seq ref);
+	// structure filter
+	axiom (forall __heap: HeapType :: Seq#Length(findPatterns_GhostStay(__heap)) >= 0);
+	// 5 element in total
+	axiom (forall __heap: HeapType ::
+		(forall i: int :: inRange(i,0,Seq#Length(findPatterns_GhostStay(__heap))) ==> 
+			Seq#Length(Seq#Index(findPatterns_GhostStay(__heap),i)) == 5)
+	);
+	// 1. pacman!Gamestate
+	axiom (forall __heap: HeapType ::	
+	 (forall i: int :: inRange(i,0,Seq#Length(findPatterns_GhostStay(__heap))) ==> 
+		Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),0) != null 
+		&& read(__heap,Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),0),alloc) 
+		&& dtype(Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),0)) == pacman$GameState
+	 )
+	);
+	// 2. pacman!Record
+	axiom (forall __heap: HeapType ::
+		(forall i: int :: inRange(i,0,Seq#Length(findPatterns_GhostStay(__heap))) ==> 
+			Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),1) != null 
+			&& read(__heap,Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),1),alloc) 
+			&& dtype(Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),1)) == pacman$Record
+		)
+	);
+	// 3. pacman!Ghost
+	axiom (forall __heap: HeapType ::
+		(forall i: int :: inRange(i,0,Seq#Length(findPatterns_GhostStay(__heap))) ==> 
+			Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),2) != null 
+			&& read(__heap,Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),2),alloc) 
+			&& dtype(Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),2)) == pacman$Ghost
+		)
+	);
+	// 4. pacman!Grid
+	axiom (forall __heap: HeapType ::
+	(forall i: int :: inRange(i,0,Seq#Length(findPatterns_GhostStay(__heap))) ==> 
+		Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),3) != null 
+		&& read(__heap,Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),3),alloc) 
+		&& dtype(Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),3)) == pacman$Grid
+	)
+	);
+	// 5. pacman!Action
+	axiom (forall __heap: HeapType ::
+	(forall i: int :: inRange(i,0,Seq#Length(findPatterns_GhostStay(__heap))) ==> 
+		Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),4) != null 
+		&& read(__heap,Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),4),alloc) 
+		&& dtype(Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),4)) == pacman$Action
+	)
+	);			
+	// s.record=~rec			
+	axiom (forall __heap: HeapType ::
+	(forall i: int :: inRange(i,0,Seq#Length(findPatterns_GhostStay(__heap))) ==> 
+		read(__heap, Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),0), pacman$GameState.record) == Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),1)	
+	)
+	);	
+	// grid1.hasEnemy=~ghost
+	axiom (forall __heap: HeapType ::
+	(forall i: int :: inRange(i,0,Seq#Length(findPatterns_GhostStay(__heap))) ==> 
+		read(__heap, Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),3), pacman$Grid.hasEnemy) == Seq#Index(Seq#Index(findPatterns_GhostStay(__heap),i),2)	
+	)
+	);			
+	// 
+	axiom (forall __heap: HeapType ::
+	(forall s,rec,ghost,grid2,grid1,act: ref ::
+		s != null && read(__heap,s,alloc) && dtype(s) == pacman$GameState
+	&&	rec != null && read(__heap,rec,alloc) && dtype(rec) == pacman$Record
+	&&	ghost != null && read(__heap,ghost,alloc) && dtype(ghost) == pacman$Ghost
+	&&	grid1 != null && read(__heap,grid1,alloc) && dtype(grid1) == pacman$Grid
+	&&	act != null && read(__heap,act,alloc) && dtype(act) == pacman$Action
+	&&  read(__heap, s, pacman$GameState.record) == rec
+	&&  read(__heap, grid1, pacman$Grid.hasEnemy) == ghost
+		==> Seq#Contains(findPatterns_GhostStay(__heap), Seq#Build(Seq#Build(Seq#Build(Seq#Build(Seq#Singleton(s), rec), ghost), grid1), act))
+	)	
+	);	
 	
 	
 /* ------------------------------------------------------------------------------------ */
@@ -255,8 +413,6 @@ function findPatterns_Collect(h: HeapType): Seq (Seq ref);
 		axiom (forall __heap: HeapType :: (forall i: int :: inRange(i,0,Seq#Length(findPatterns_Collect(__heap))) ==> 
 			read(__heap, Seq#Index(Seq#Index(findPatterns_Collect(__heap),i),4), pacman$Grid.hasGem) == Seq#Index(Seq#Index(findPatterns_Collect(__heap),i),3)	
 		));			
-		
-		
 		axiom (forall __heap: HeapType :: (forall s,rec,pac,gem,grid: ref ::
 			s != null && read(__heap,s,alloc) && dtype(s) == pacman$GameState
 		&&	rec != null && read(__heap,rec,alloc) && dtype(rec) == pacman$Record
