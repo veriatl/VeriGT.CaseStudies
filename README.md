@@ -41,7 +41,7 @@ Using the sound encoding of SimpleGT rules, we can verify transformation specifi
 2. PacmanSurvive [portal](https://github.com/VeriATL/VeriGT/blob/master/Pacman_TransformationCorrectness/PacmanP2.bpl)
 3. PacmanMoved [portal](https://github.com/VeriATL/VeriGT/blob/master/Pacman_TransformationCorrectness/PacmanP3.bpl)
 
-To modularize the verification task, the encodings of SimpleGT rules are encapsulated in this file [portal](https://github.com/VeriATL/VeriGT/blob/master/Prelude/ATLRules.whole.bpl).
+To modularize the verification task, the encodings of SimpleGT rules are encapsulated in this file [portal](https://github.com/VeriATL/VeriGT/blob/master/Prelude/SimpleGTRules.whole.bpl).
 
 
 Performance
